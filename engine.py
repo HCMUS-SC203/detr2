@@ -113,7 +113,8 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         res_list = list(res.values())
         for i in range(len(res_list)):
             print(str(i) + "-th image of the batch: ")
-            print(res_list[i])
+            print("bbox result: ")
+            print(res_list[i]['boxes'])
         if coco_evaluator is not None:
             coco_evaluator.update(res)
 

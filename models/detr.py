@@ -2,6 +2,8 @@
 """
 DETR model and criterion classes.
 """
+import numpy as np
+
 import torch
 import torch.nn.functional as F
 import torchvision.transforms as T

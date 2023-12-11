@@ -12,10 +12,10 @@ def activation(x, size):
         return 0
     # return 1
     size -= padding
-    threshold = 0.7
+    threshold = 1/3
     ratio = x/size - threshold
     if ratio < 0:
-        return np.exp(ratio*7) / 1.5
+        return np.exp(ratio*20) / 1.5
     return np.tanh((ratio + 1))
 
 def process_image(img):

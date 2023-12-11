@@ -356,7 +356,7 @@ class RemBackGround:
         # convert boxes from [0; 1] to image scales
         bboxes_scaled = self.rescale_bboxes(outputs['pred_boxes'][0, keep], img.size)
         # probas[keep], bboxes_scaled
-
+        boxes = bboxes_scaled.tolist()
         img_array = np.asarray(img)
         mask = np.zeros_like(img_array, dtype=np.uint8)
         for xmin, ymin, xmax, ymax in boxes:

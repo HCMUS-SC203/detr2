@@ -142,6 +142,14 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         #         # if area(arr[i]) > 32 * 32:
         #         new_arr.append(arr[i])
         #     res[key]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
+        for i in range(len(res)):
+            # print("key = " + str(key))
+            # arr = results[i]['boxes'].cpu().numpy()
+            widths = res[i]['boxes'][:, 3] - res[i]['boxes'][:, 1]
+            heights = res[i]['boxes'][:, 2] - res[i]['boxes'][:, 0]
+            areas = widths * heights
+            mask = areas > (32 ** 2)
+            res[i]['boxes'] = mask
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

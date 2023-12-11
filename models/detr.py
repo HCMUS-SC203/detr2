@@ -319,6 +319,11 @@ class RemBackGround:
         transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
         self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
 
+        checkpoint = torch.hub.load_state_dict_from_url(
+            url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
+        )
+        self.model.load_state_dict(checkpoint["model"]).eval()
+
         self.transform = T.Compose([
             T.Resize(800),
             T.ToTensor(),
@@ -326,7 +331,7 @@ class RemBackGround:
         ])
 
     def __call__(self, img):
-        samples = transform(img).unsqueeze(0)
+        samples = self.transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
 
         output = self.model(samples)

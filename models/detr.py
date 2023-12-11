@@ -22,10 +22,6 @@ from models.position_encoding import PositionEmbeddingSine
 from models.backbone import Backbone, Joiner
 from models.transformer import Transformer
 
-
-import hubconf
-
-
 class DETR(nn.Module):
     """ This is the DETR module that performs object detection """
     def __init__(self, backbone, transformer, num_classes, num_queries, aux_loss=False):

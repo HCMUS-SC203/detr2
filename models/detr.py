@@ -4,6 +4,7 @@ DETR model and criterion classes.
 """
 import torch
 import torch.nn.functional as F
+import torchvision.transforms as T
 from torch import nn
 
 from util import box_ops
@@ -11,12 +12,13 @@ from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate,
                        is_dist_avail_and_initialized)
 
-from .backbone import build_backbone, BackBone, Joiner
+from .backbone import build_backbone
 from .matcher import build_matcher
 from .segmentation import (DETRsegm, PostProcessPanoptic, PostProcessSegm,
                            dice_loss, sigmoid_focal_loss)
-from .transformer import build_transformer, Transformer
-from models.position_encoding import PositionEmbeddingSine
+from .transformer import build_transformer
+
+import hubconf
 
 
 class DETR(nn.Module):
@@ -300,25 +302,21 @@ class MLP(nn.Module):
             x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
         return x
 
-class RemBackGround(DETR):
+class RemBackGround:
     def __init__(self):
-        num_classes = 91
-        hidden_dim = 256
-        backbone = Backbone("resnet50", train_backbone=True, return_interm_layers=False, dilation=False)
-        pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
-        backbone_with_pos_enc = Joiner(backbone, pos_enc)
-        backbone_with_pos_enc.num_channels = backbone.num_channels
-        transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
+        self.model = hubconf.detr_resnet50(pretrained=True).eval()
+        self.transform = T.Compose([
+            T.Resize(800),
+            T.ToTensor(),
+            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
 
-        super().__init__(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
+    def __call__(self, img):
+        samples = transform(img).unsqueeze(0)
+        assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
+        
+        output = self.model(samples)
 
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
-        )
-        self.load_state_dict(checkpoint["model"])
-
-    def forward(self, samples: NestedTensor, img):
-        output = super().forward(samples)
         probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
         keep = probas.max(-1).values > 0.7
         # convert boxes from [0; 1] to image scales

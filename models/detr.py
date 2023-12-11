@@ -299,14 +299,6 @@ class MLP(nn.Module):
             x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
         return x
 
-class NewDETR(DETR):
-    def __init__(self, backbone, transformer, num_classes, num_queries, aux_loss=False):
-        super().__init__(backbone, transformer, num_classes, num_queries, aux_loss)
-
-    def forward(self, samples):
-        # print(samples)
-        return super().forward(samples)
-
 def build(args):
     # the `num_classes` naming here is somewhat misleading.
     # it indeed corresponds to `max_obj_id + 1`, where max_obj_id
@@ -327,22 +319,13 @@ def build(args):
 
     transformer = build_transformer(args)
 
-    if args.new_detr:
-        model = NewDETR(
-            backbone,
-            transformer,
-            num_classes=num_classes,
-            num_queries=args.num_queries,
-            aux_loss=args.aux_loss,
-        )
-    else:
-        model = DETR(
-            backbone,
-            transformer,
-            num_classes=num_classes,
-            num_queries=args.num_queries,
-            aux_loss=args.aux_loss,
-        )
+    model = DETR(
+        backbone,
+        transformer,
+        num_classes=num_classes,
+        num_queries=args.num_queries,
+        aux_loss=args.aux_loss,
+    )
 
     if args.masks:
         model = DETRsegm(model, freeze_detr=(args.frozen_weights is not None))

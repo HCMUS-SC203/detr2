@@ -15,7 +15,7 @@ def activation(x, size):
     threshold = 2/5
     ratio = x/size - threshold
     if ratio < 0:
-        return np.exp(ratio*5) / 1.5
+        return np.exp(ratio*2) / 1.5
     return np.tanh((ratio + 1) * 3)
 
 def process_image(img):

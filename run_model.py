@@ -3,7 +3,7 @@ import glob
 import sys
 
 import time
-from PIL import Image
+from PIL import Image, ImageDraw
 import requests
 import matplotlib.pyplot as plt
 import torchvision.transforms as T
@@ -86,15 +86,35 @@ def plot_results(pil_img, prob, boxes):
     ax = plt.gca()
     for p, (xmin, ymin, xmax, ymax), c in zip(prob, boxes.tolist(), COLORS * 100):
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-                                   fill=False, color=c, linewidth=3))
+                                   fill=False, color=c, linewidth=1))
         cl = p.argmax()
-        text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+        # text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+        text = f'{p[cl]:0.2f}'
         ax.text(xmin, ymin, text, fontsize=15,
                 bbox=dict(facecolor='yellow', alpha=0.5))
     plt.axis('off')
     plt.show()
 
-from PIL import Image, ImageDraw
+def save_results(pil_img, prob, boxes, idx, SAVE_PATH):
+    print("Saving image", idx, "...")
+    plt.figure(figsize=(16,10))
+    plt.imshow(pil_img)
+    ax = plt.gca()
+    for p, (xmin, ymin, xmax, ymax), c in zip(prob, boxes.tolist(), COLORS * 100):
+        ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+                                   fill=False, color=c, linewidth=1))
+        cl = p.argmax()
+        # text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+        text = f'{p[cl]:0.2f}'
+        ax.text(xmin, ymin, text, fontsize=15,
+                bbox=dict(facecolor='yellow', alpha=0.5))
+        print(idx, xmin, ymin, xmax, ymax, p[cl])
+
+    plt.axis('off')
+    # plt.show()
+    plt.savefig(os.path.join(SAVE_PATH, str(idx).zfill(6) + ".png"))
+    plt.close()
+    print("Done")
 
 def add_white_rectangle(img_path, online = False):
     print("Adding white rectangle")
@@ -137,6 +157,39 @@ def detect_img(img_path, model, transform):
 
     print(f"Time: {stop - start}s")
     plot_results(im, scores, boxes)
+
+def save_detect_img(img_path, model, transform, idx, output_path):
+    im = Image.open(img_path).convert("RGB")
+    start = time.time()
+    scores, boxes = detect(im, model, transform)
+    stop = time.time()
+
+    if (scores is None):
+        padded_img = add_white_rectangle(url, True)
+        start = time.time()
+        scores, boxes = detect(padded_img, model, transform)
+        stop = time.time()
+
+    print(f"Time: {stop - start}s")
+    save_results(im, scores, boxes, idx, output_path)
+    im.close()
+    return start, stop
+
+
+def detect_set_images(model, transform, input_path, output_path):
+    img_set = glob.glob(input_path + "*.jpg") + glob.glob(input_path + "*.png")
+    img_set.sort()
+    print(img_set)
+
+    start = time.time()
+
+    for idx, img_path in zip(len(img_set), img_set):
+        prev, cur = save_detect_img(img_path, detr, transform, idx, output_path)
+        print('Image', idx, ": Time", cur - prev, "(s) Total time", time.time() - start)
+
+    stop = time.time()
+    print("Elapse time:", stop - start, "(s)")
+
 
 def detect_set(model, transform, path_name):
     dir_path = path_name
@@ -199,23 +252,23 @@ if __name__ == "__main__":
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-    path_name = sys.argv[1]
-    if path_name[-1] != "/":
-        path_name += "/"
-    model_name = sys.argv[2]
-    print("Path:", path_name)
+    input_path = sys.argv[1]
+    # if path_name[-1] != "/":
+    #     path_name += "/"
+    output_path = sys.argv[2]
+    model_name = sys.argv[3]
+    print("Input Path:", input_path)
+    print("Output Path:", output_path)
     print("Model:", model_name)
 
     # detr = detr_custom(pretrained=True, num_classes=1, return_postprocessor=False).eval()
     # detr = hubconf.detr_resnet101_dc5(pretrained=True).eval()
-    if (model_name == "detr_resnet50"):
+    if (model_name == "detr_r50"):
         detr = hubconf.detr_resnet50(pretrained=True).eval()
     elif (model_name == "detr_custom"):
         detr = detr_custom(pretrained=True, num_classes=1, return_postprocessor=False).eval()
-    elif (model_name == "detr_resnet50_finetune"):
+    elif (model_name == "detr_r50_ft"):
         detr = hubconf.detr_resnet50_finetune(pretrained=True).eval()
-    elif (model_name == "detr_resnet50_finetune_new"):
-        detr = hubconf.detr_resnet50_finetune_new(pretrained=True).eval()
 
     # url = 'http://images.cocodataset.org/train2017/000000000536.jpg'
     # im = Image.open(requests.get(url, stream=True).raw)
@@ -231,4 +284,6 @@ if __name__ == "__main__":
     # detect_set(detr, transform, path_name)
     # print("Detected:", detected)
 
-    detect_img("http://images.cocodataset.org/val2017/000000002299.jpg", detr, transform)
+    # detect_img("https://storage.googleapis.com/kagglesdsdata/datasets/4135086/7159570/val2017/000029.jpg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=databundle-worker-v2%40kaggle-161607.iam.gserviceaccount.com%2F20231211%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20231211T144442Z&X-Goog-Expires=345600&X-Goog-SignedHeaders=host&X-Goog-Signature=6177eda0f09b5a5965f7e88d053b4e17fc742e9e2e2c0d31a1c865d187afcac5a1655c7cece815f18ce2726846106529e290ab6d669da8cfa55f17733ccb707f40121458aba26460ec2a1c2b9baad129d71dce26c621e2a5454e674abfd18e5aa9b467dc524451b3761c1abe69ec4b10fb4f2400c59b1d7c7963fcb99f270074ed9b1e3903f1ae565165343848464f40398150282d9a3bfb3df6e8595e4866a25dd6ab9b6935005aaf37364598405eac2726a2cc766a7347bc4fdeb3ff3c7ff8832e5396a0797c3a3c843649b6698d975a23fcb008a70442057515660eb75078bfd451a5805fc2e2880ef5943101e1f0f98acb04d52c24cc7b62ac5349c10748", detr, transform)
+
+    detect_set_images(detr, transform, input_path, output_path)

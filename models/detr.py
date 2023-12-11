@@ -11,11 +11,12 @@ from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
                        accuracy, get_world_size, interpolate,
                        is_dist_avail_and_initialized)
 
-from .backbone import build_backbone
+from .backbone import build_backbone, BackBone, Joiner
 from .matcher import build_matcher
 from .segmentation import (DETRsegm, PostProcessPanoptic, PostProcessSegm,
                            dice_loss, sigmoid_focal_loss)
-from .transformer import build_transformer
+from .transformer import build_transformer, Transformer
+from models.position_encoding import PositionEmbeddingSine
 
 
 class DETR(nn.Module):
@@ -298,6 +299,41 @@ class MLP(nn.Module):
         for i, layer in enumerate(self.layers):
             x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
         return x
+
+class RemBackGround(DETR):
+    def __init__(self):
+        num_classes = 91
+        hidden_dim = 256
+        backbone = Backbone("resnet50", train_backbone=True, return_interm_layers=False, dilation=False)
+        pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
+        backbone_with_pos_enc = Joiner(backbone, pos_enc)
+        backbone_with_pos_enc.num_channels = backbone.num_channels
+        transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
+
+        super().__init__(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
+
+        checkpoint = torch.hub.load_state_dict_from_url(
+            url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
+        )
+        self.load_state_dict(checkpoint["model"])
+
+    def forward(self, samples: NestedTensor, img):
+        output = super().forward(samples)
+        probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
+        keep = probas.max(-1).values > 0.7
+        # convert boxes from [0; 1] to image scales
+        bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
+        # probas[keep], bboxes_scaled
+
+        img_array = np.asarray(img)
+        mask = np.zeros_like(img_array, dtype=np.uint8)
+        for xmin, ymin, xmax, ymax in boxes:
+            mask[ymin:ymax, xmin:xmax, :] = [0xFF, 0xFF, 0xFF]
+        img_array = np.bitwise_and(img_array, mask)
+
+        img.close()
+        img = Image.fromarray(img_array)
+        return img
 
 def build(args):
     # the `num_classes` naming here is somewhat misleading.

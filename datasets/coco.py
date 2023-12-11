@@ -11,6 +11,7 @@ import torch.utils.data
 import torchvision
 from pycocotools import mask as coco_mask
 import datasets.preprocess_img as pre_img
+import models.detr as detr
 
 import datasets.transforms as T
 
@@ -20,6 +21,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         super(CocoDetection, self).__init__(img_folder, ann_file)
         self._transforms = transforms
         self.prepare = ConvertCocoPolysToMask(return_masks)
+        self.imageFilter = detr.RemBackground()
 
     def __getitem__(self, idx):
         img, target = super(CocoDetection, self).__getitem__(idx)
@@ -27,7 +29,8 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         target = {'image_id': image_id, 'annotations': target}
         img, target = self.prepare(img, target)
         # print(type(img))
-        img = pre_img.process_image(img)
+        # img = pre_img.process_image(img)
+        img = self.imageFilter(img)
         if self._transforms is not None:
             img, target = self._transforms(img, target)
         return img, target

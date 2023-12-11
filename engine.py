@@ -145,8 +145,8 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         for key in res.keys():
             # print("key = " + str(key))
             # arr = results[i]['boxes'].cpu().numpy()
-            widths = res[key]['boxes'][3] - res[key]['boxes'][1]
-            heights = res[key]['boxes'][2] - res[key]['boxes'][0]
+            widths = res[key]['boxes'][:, 3] - res[key]['boxes'][:, 1]
+            heights = res[key]['boxes'][:, 2] - res[key]['boxes'][:, 0]
             areas = widths * heights
             mask = areas > (32 ** 2)
             res[key]['boxes'] = mask

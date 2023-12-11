@@ -113,7 +113,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights
-            mask = areas > 50
+            mask = areas > 100
             results[i]['boxes'] = results[i]['boxes'][mask]
             # print("bbox result: ")
             # print(arr)

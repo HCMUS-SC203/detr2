@@ -352,7 +352,7 @@ class RemBackGround:
         probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
         keep = probas.max(-1).values > 0.7
         # convert boxes from [0; 1] to image scales
-        bboxes_scaled = self.rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
+        bboxes_scaled = self.rescale_bboxes(outputs['pred_boxes'][0, keep], samples.size)
         # probas[keep], bboxes_scaled
 
         img_array = np.asarray(img)

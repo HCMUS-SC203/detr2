@@ -361,6 +361,11 @@ class RemBackGround:
         img_array = np.asarray(img)
         mask = np.zeros_like(img_array, dtype=np.uint8)
         for xmin, ymin, xmax, ymax in boxes:
+            padding = 10
+            xmin = max(0, int(xmin) - padding)
+            ymin = max(0, int(ymin) - padding)
+            xmax = min(img_array.shape[1], int(xmax) + padding)
+            ymax = min(img_array.shape[0], int(ymax) + padding)
             mask[ymin:ymax, xmin:xmax, :] = [0xFF, 0xFF, 0xFF]
         img_array = np.bitwise_and(img_array, mask)
 

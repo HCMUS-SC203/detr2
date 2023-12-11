@@ -63,6 +63,8 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     print("Averaged stats:", metric_logger)
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 
+def area(bbox):
+    return (bbox[:, 2] - bbox[:, 0]) * (bbox[:, 3] - bbox[:, 1])
 
 @torch.no_grad()
 def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, output_dir):
@@ -117,10 +119,15 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         #     print(res_list[i]['boxes'].cpu().numpy())
 
         for key in res.keys():
-            print("key = " + str(key))
+            # print("key = " + str(key))
             arr = res[key]['boxes'].cpu().numpy()
-            print("bbox result: ")
-            print(arr)
+            # print("bbox result: ")
+            # print(arr)
+            new_arr = []
+            for i in range(len(arr)):
+                if area(arr[i]) > 0:
+                    new_arr.append(arr[i])
+            res[key]['boxes'] = torch.tensor(new_arr, dtype=torch.float32, device=device)
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

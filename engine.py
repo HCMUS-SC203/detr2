@@ -118,6 +118,8 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             print("before min area = " + str(areas.min()))
             mask = areas > min_area
             results[i]['boxes'] = results[i]['boxes'][mask]
+            results[i]['labels'] = results[i]['labels'][mask]
+            results[i]['scores'] = results[i]['scores'][mask]
             print("after size = " + str(results[i]['boxes'].size()))
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]

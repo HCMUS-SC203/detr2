@@ -113,12 +113,13 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         for i in range(len(results)):
             # print("key = " + str(key))
             arr = results[i]['boxes'].cpu().numpy()
+            print(type(results[i]['boxes']))
             # print("bbox result: ")
             # print(arr)
-            new_arr = []
-            for i in range(len(arr)):
-                # if area(arr[i]) > 32 * 32:
-                new_arr.append(arr[i])
+            # new_arr = []
+            # for i in range(len(arr)):
+            #     # if area(arr[i]) > 32 * 32:
+            #     new_arr.append(arr[i])
             # results[i]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
         if 'segm' in postprocessors.keys():
             target_sizes = torch.stack([t["size"] for t in targets], dim=0)

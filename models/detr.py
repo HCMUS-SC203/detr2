@@ -322,7 +322,8 @@ class RemBackGround:
         checkpoint = torch.hub.load_state_dict_from_url(
             url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
         )
-        self.model.load_state_dict(checkpoint["model"]).eval()
+        self.model.load_state_dict(checkpoint["model"])
+        self.model.eval()
 
         self.transform = T.Compose([
             T.Resize(800),

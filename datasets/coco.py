@@ -21,7 +21,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         super(CocoDetection, self).__init__(img_folder, ann_file)
         self._transforms = transforms
         self.prepare = ConvertCocoPolysToMask(return_masks)
-        self.imageFilter = detr.RemBackground()
+        self.imageFilter = detr.RemBackGround()
 
     def __getitem__(self, idx):
         img, target = super(CocoDetection, self).__getitem__(idx)

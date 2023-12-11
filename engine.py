@@ -114,7 +114,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights
             mask = areas > (32 ** 2)
-            results[i]['boxes'] = mask
+            results[i]['boxes'] = results[i]['boxes'][mask]
             # print("bbox result: ")
             # print(arr)
             # new_arr = []
@@ -150,7 +150,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             heights = res[key]['boxes'][:, 2] - res[key]['boxes'][:, 0]
             areas = widths * heights
             mask = areas > (32 ** 2)
-            res[key]['boxes'] = mask
+            res[key]['boxes'] = res[key]['boxes'][mask]
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

@@ -331,6 +331,18 @@ class RemBackGround:
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
+    def box_cxcywh_to_xyxy(self, x):
+        x_c, y_c, w, h = x.unbind(1)
+        b = [(x_c - 0.5 * w), (y_c - 0.5 * h),
+            (x_c + 0.5 * w), (y_c + 0.5 * h)]
+        return torch.stack(b, dim=1)
+
+    def rescale_bboxes(self, out_bbox, size):
+        img_w, img_h = size
+        b = self.box_cxcywh_to_xyxy(out_bbox)
+        b = b * torch.tensor([img_w, img_h, img_w, img_h], dtype=torch.float32)
+        return b
+
     def __call__(self, img):
         samples = self.transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
@@ -340,7 +352,7 @@ class RemBackGround:
         probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
         keep = probas.max(-1).values > 0.7
         # convert boxes from [0; 1] to image scales
-        bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
+        bboxes_scaled = self.rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
         # probas[keep], bboxes_scaled
 
         img_array = np.asarray(img)

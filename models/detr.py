@@ -3,6 +3,7 @@
 DETR model and criterion classes.
 """
 import numpy as np
+from PIL import Image
 
 import torch
 import torch.nn.functional as F

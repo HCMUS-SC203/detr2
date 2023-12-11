@@ -119,16 +119,16 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         #     print("bbox result: ")
         #     print(res_list[i]['boxes'].cpu().numpy())
 
-        for key in res.keys():
-            # print("key = " + str(key))
-            arr = res[key]['boxes'].cpu().numpy()
-            # print("bbox result: ")
-            # print(arr)
-            new_arr = []
-            for i in range(len(arr)):
-                # if area(arr[i]) > 32 * 32:
-                new_arr.append(arr[i])
-            res[key]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
+        # for key in res.keys():
+        #     # print("key = " + str(key))
+        #     arr = res[key]['boxes'].cpu().numpy()
+        #     # print("bbox result: ")
+        #     # print(arr)
+        #     new_arr = []
+        #     for i in range(len(arr)):
+        #         # if area(arr[i]) > 32 * 32:
+        #         new_arr.append(arr[i])
+        #     res[key]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

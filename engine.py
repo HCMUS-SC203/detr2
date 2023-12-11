@@ -119,7 +119,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             # print("before min area = " + str(areas.min()))
             mask = areas > min_area
             duplicated_rectangles = []
-            filter = {results[i][key][mask] for key in ['boxes', 'labels', 'scores']}
+            filter = {key: results[i][key][mask] for key in ['boxes', 'labels', 'scores']}
             for key in ['boxes', 'labels', 'scores']:
                 results[i][key] = results[i][key][mask]
             print("middle size = " + str(results[i]['boxes'].size()))

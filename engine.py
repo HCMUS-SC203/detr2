@@ -109,7 +109,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         # print((results))
         for i in range(len(results)):
             # print("key = " + str(key))
-            arr = results[i]['boxes'].cpu().numpy()
+            # arr = results[i]['boxes'].cpu().numpy()
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights

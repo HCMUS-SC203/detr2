@@ -18,6 +18,11 @@ from .segmentation import (DETRsegm, PostProcessPanoptic, PostProcessSegm,
                            dice_loss, sigmoid_focal_loss)
 from .transformer import build_transformer
 
+from models.position_encoding import PositionEmbeddingSine
+from models.backbone import Backbone, Joiner
+from models.transformer import Transformer
+
+
 import hubconf
 
 
@@ -304,7 +309,20 @@ class MLP(nn.Module):
 
 class RemBackGround:
     def __init__(self):
-        self.model = hubconf.detr_resnet50(pretrained=True).eval()
+        backbone_name = "resnet50"
+        dilation = False
+        num_classes = 91
+        mask = False
+
+        hidden_dim = 256
+
+        backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
+        pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
+        backbone_with_pos_enc = Joiner(backbone, pos_enc)
+        backbone_with_pos_enc.num_channels = backbone.num_channels
+        transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
+        self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
+
         self.transform = T.Compose([
             T.Resize(800),
             T.ToTensor(),
@@ -314,7 +332,7 @@ class RemBackGround:
     def __call__(self, img):
         samples = transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
-        
+
         output = self.model(samples)
 
         probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]

@@ -65,7 +65,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 
 @torch.no_grad()
-def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, output_dir):
+def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, output_dir, min_area):
     model.eval()
     criterion.eval()
 
@@ -113,7 +113,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights
-            mask = areas > 150
+            mask = areas > min_area
             results[i]['boxes'] = results[i]['boxes'][mask]
             # print("bbox result: ")
             # print(arr)

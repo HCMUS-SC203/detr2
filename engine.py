@@ -149,7 +149,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             widths = res[key]['boxes'][:, 3] - res[key]['boxes'][:, 1]
             heights = res[key]['boxes'][:, 2] - res[key]['boxes'][:, 0]
             areas = widths * heights
-            mask = areas > (32 ** 2)
+            mask = areas > 50
             res[key]['boxes'] = res[key]['boxes'][mask]
         
         if coco_evaluator is not None:

@@ -119,7 +119,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             for i in range(len(arr)):
                 # if area(arr[i]) > 32 * 32:
                 new_arr.append(arr[i])
-            results[i]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
+            # results[i]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
         if 'segm' in postprocessors.keys():
             target_sizes = torch.stack([t["size"] for t in targets], dim=0)
             results = postprocessors['segm'](results, outputs, orig_target_sizes, target_sizes)

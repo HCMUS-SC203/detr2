@@ -10,7 +10,7 @@ import torch
 import torch.utils.data
 import torchvision
 from pycocotools import mask as coco_mask
-import preprocess_img as pre_img
+import .preprocess_img as pre_img
 
 import datasets.transforms as T
 

@@ -10,12 +10,12 @@ padding = 250
 def activation(x, size):
     if x >= size - padding:
         return 0
-    return 1
-    # size -= padding
-    # ratio = x/size - 0.5
-    # if ratio < 0:
-    #     return np.exp(ratio*5) / 1.5
-    # return (ratio + 1) / 1.5
+    # return 1
+    size -= padding
+    ratio = x/size - 0.5
+    if ratio < 0:
+        return np.exp(ratio*5) / 1.5
+    return (ratio + 1) / 1.5
 
 def process_image(img):
     img_array = np.asarray(img)

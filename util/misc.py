@@ -192,6 +192,7 @@ class MetricLogger(object):
         self.meters[name] = meter
 
     def log_every(self, iterable, print_freq, header=None):
+        print("Enter log_every...")
         i = 0
         if not header:
             header = ''
@@ -220,7 +221,9 @@ class MetricLogger(object):
                 'data: {data}'
             ])
         MB = 1024.0 * 1024.0
+        print("Enter obj in iterable")
         for obj in iterable:
+            print("in iterable...")
             data_time.update(time.time() - end)
             yield obj
             iter_time.update(time.time() - end)

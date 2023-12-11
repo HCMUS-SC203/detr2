@@ -10,6 +10,7 @@ import torch
 import torch.utils.data
 import torchvision
 from pycocotools import mask as coco_mask
+import preprocess_img as pre_img
 
 import datasets.transforms as T
 
@@ -25,7 +26,8 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         image_id = self.ids[idx]
         target = {'image_id': image_id, 'annotations': target}
         img, target = self.prepare(img, target)
-        print(type(img))
+        # print(type(img))
+        img = pre_img.preprocess_img(img)
         if self._transforms is not None:
             img, target = self._transforms(img, target)
         return img, target

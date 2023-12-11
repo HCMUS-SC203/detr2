@@ -106,7 +106,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
 
         orig_target_sizes = torch.stack([t["orig_size"] for t in targets], dim=0)
         results = postprocessors['bbox'](outputs, orig_target_sizes)
-        # print((results))
+        print((results))
         # for i in range(len(results)):
         #     # print("key = " + str(key))
         #     # arr = results[i]['boxes'].cpu().numpy()
@@ -142,15 +142,15 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         #         # if area(arr[i]) > 32 * 32:
         #         new_arr.append(arr[i])
         #     res[key]['boxes'] = torch.tensor(np.array(new_arr), dtype=torch.float32, device=device)
-        for key in res.keys():
-            # print("key = " + str(key))
-            # arr = results[i]['boxes'].cpu().numpy()
-            # print(res[key]['boxes'].size())
-            widths = res[key]['boxes'][:, 3] - res[key]['boxes'][:, 1]
-            heights = res[key]['boxes'][:, 2] - res[key]['boxes'][:, 0]
-            areas = widths * heights
-            mask = areas > 50
-            res[key]['boxes'] = res[key]['boxes'][mask]
+        # for key in res.keys():
+        #     # print("key = " + str(key))
+        #     # arr = results[i]['boxes'].cpu().numpy()
+        #     # print(res[key]['boxes'].size())
+        #     widths = res[key]['boxes'][:, 3] - res[key]['boxes'][:, 1]
+        #     heights = res[key]['boxes'][:, 2] - res[key]['boxes'][:, 0]
+        #     areas = widths * heights
+        #     mask = areas > 50
+        #     res[key]['boxes'] = res[key]['boxes'][mask]
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

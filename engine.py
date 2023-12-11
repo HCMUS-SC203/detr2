@@ -110,11 +110,17 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         for i in range(len(results)):
             # print("key = " + str(key))
             # arr = results[i]['boxes'].cpu().numpy()
+            print("before size = " + str(results[i]['boxes'].size()))
+            print("before max area = " + str(results[i]['boxes'].max()))
+            print("before min area = " + str(results[i]['boxes'].min()))
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights
             mask = areas > min_area
             results[i]['boxes'] = results[i]['boxes'][mask]
+            print("after size = " + str(results[i]['boxes'].size()))
+            print("after max area = " + str(results[i]['boxes'].max()))
+            print("after min area = " + str(results[i]['boxes'].min()))
             # print("bbox result: ")
             # print(arr)
             # new_arr = []

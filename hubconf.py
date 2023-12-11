@@ -2,7 +2,7 @@
 import torch
 
 from models.backbone import Backbone, Joiner
-from models.detr import DETR, PostProcess
+from models.detr import DETR, PostProcess, NewDETR
 from models.position_encoding import PositionEmbeddingSine
 from models.segmentation import DETRsegm, PostProcessPanoptic
 from models.transformer import Transformer
@@ -21,6 +21,40 @@ def _make_detr(backbone_name: str, dilation=False, num_classes=91, mask=False):
     if mask:
         return DETRsegm(detr)
     return detr
+
+def _make_NEW_detr(backbone_name: str, dilation=False, num_classes=91, mask=False):
+    hidden_dim = 256
+    backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
+    pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
+    backbone_with_pos_enc = Joiner(backbone, pos_enc)
+    backbone_with_pos_enc.num_channels = backbone.num_channels
+    transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
+    detr = NewDETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
+    if mask:
+        return DETRsegm(detr)
+    return detr
+
+def detr_resnet50_finetune(pretrained=False, num_classes=91, return_postprocessor=False):
+    model = _make_detr("resnet50", dilation=False, num_classes=num_classes)
+    if pretrained:
+        checkpoint = torch.hub.load_state_dict_from_url(
+            url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
+        )
+        model.load_state_dict(checkpoint["model"])
+    if return_postprocessor:
+        return model, PostProcess()
+    return model
+
+def detr_resnet50_finetune_new(pretrained=False, num_classes=91, return_postprocessor=False):
+    model = _make_NEW_detr("resnet50", dilation=False, num_classes=num_classes)
+    if pretrained:
+        checkpoint = torch.hub.load_state_dict_from_url(
+            url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
+        )
+        model.load_state_dict(checkpoint["model"])
+    if return_postprocessor:
+        return model, PostProcess()
+    return model
 
 
 def detr_resnet50(pretrained=False, num_classes=91, return_postprocessor=False):

@@ -254,7 +254,6 @@ class SetCriterion(nn.Module):
 
         return losses
 
-
 class PostProcess(nn.Module):
     """ This module converts the model's output into the format expected by the coco api"""
     @torch.no_grad()
@@ -300,6 +299,13 @@ class MLP(nn.Module):
             x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
         return x
 
+class NewDETR(DETR):
+    def __init__(self, backbone, transformer, num_classes, num_queries, aux_loss=False):
+        super().__init__(backbone, transformer, num_classes, num_queries, aux_loss)
+
+    def forward(self, x):
+        print("NewDetr forward")
+        return super().forward()
 
 def build(args):
     # the `num_classes` naming here is somewhat misleading.
@@ -321,13 +327,23 @@ def build(args):
 
     transformer = build_transformer(args)
 
-    model = DETR(
-        backbone,
-        transformer,
-        num_classes=num_classes,
-        num_queries=args.num_queries,
-        aux_loss=args.aux_loss,
-    )
+    if args.new_detr:
+        model = NewDETR(
+            backbone,
+            transformer,
+            num_classes=num_classes,
+            num_queries=args.num_queries,
+            aux_loss=args.aux_loss,
+        )
+    else:
+        model = DETR(
+            backbone,
+            transformer,
+            num_classes=num_classes,
+            num_queries=args.num_queries,
+            aux_loss=args.aux_loss,
+        )
+
     if args.masks:
         model = DETRsegm(model, freeze_detr=(args.frozen_weights is not None))
     matcher = build_matcher(args)

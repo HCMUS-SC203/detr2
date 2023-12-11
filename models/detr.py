@@ -335,7 +335,7 @@ class RemBackGround:
         samples = self.transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
 
-        output = self.model(samples)
+        outputs = self.model(samples)
 
         probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
         keep = probas.max(-1).values > 0.7

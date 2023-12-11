@@ -303,9 +303,9 @@ class NewDETR(DETR):
     def __init__(self, backbone, transformer, num_classes, num_queries, aux_loss=False):
         super().__init__(backbone, transformer, num_classes, num_queries, aux_loss)
 
-    def forward(self, x):
-        print("NewDetr forward")
-        return super().forward()
+    def forward(self, samples):
+        print(samples)
+        return super().forward(samples)
 
 def build(args):
     # the `num_classes` naming here is somewhat misleading.

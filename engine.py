@@ -110,7 +110,7 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         for i in range(len(results)):
             # print("key = " + str(key))
             # arr = results[i]['boxes'].cpu().numpy()
-            print("before size = " + str(results[i]['boxes'].size()))
+            # print("before size = " + str(results[i]['boxes'].size()))
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights
@@ -122,13 +122,13 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
             filter = {key: results[i][key][mask] for key in ['boxes', 'labels', 'scores']}
             for key in ['boxes', 'labels', 'scores']:
                 results[i][key] = results[i][key][mask]
-            print("middle size = " + str(results[i]['boxes'].size()))
+            # print("middle size = " + str(results[i]['boxes'].size()))
             for key in ['boxes', 'labels', 'scores']:
                 while (len(results[i][key]) < original_size):
                     results[i][key] = torch.cat((results[i][key], filter[key]), 0)
                 results[i][key] = results[i][key][:original_size]
 
-            print("after size = " + str(results[i]['boxes'].size()))
+            # print("after size = " + str(results[i]['boxes'].size()))
             widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
             heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
             areas = widths * heights

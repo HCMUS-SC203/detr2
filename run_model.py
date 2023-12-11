@@ -166,7 +166,7 @@ def save_detect_img(img_path, model, transform, idx, output_path):
     stop = time.time()
 
     if (scores is None):
-        padded_img = add_white_rectangle(url, True)
+        padded_img = add_white_rectangle(img_path, False)
         start = time.time()
         scores, boxes = detect(padded_img, model, transform)
         stop = time.time()

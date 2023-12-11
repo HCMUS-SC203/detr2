@@ -177,7 +177,7 @@ def save_detect_img(img_path, model, transform, idx, output_path):
 
 
 def detect_set_images(model, transform, input_path, output_path):
-    img_set = glob.glob(input_path + "*.jpg") + glob.glob(input_path + "*.png")
+    img_set = glob.glob(os.path.join(input_path, "*.jpg")) + glob.glob(os.path.join(input_path, "*.png"))
     img_set.sort()
     print(img_set)
 

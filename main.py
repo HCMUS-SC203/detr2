@@ -183,7 +183,8 @@ def main(args):
 
     if args.eval:
         print("Start evaluating")
-        for min_area in list(range(10, 51, 10)) + list(range(100, 1001, 100)):
+        # for min_area in list(range(10, 51, 10)) + list(range(100, 1001, 100)):
+        for min_area in list(range(800, 1001, 100)):
             print(f"min_area: {min_area}")
             test_stats, coco_evaluator = evaluate(model, criterion, postprocessors,
                                                 data_loader_val, base_ds, device, args.output_dir, min_area)

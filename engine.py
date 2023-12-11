@@ -107,14 +107,14 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
         orig_target_sizes = torch.stack([t["orig_size"] for t in targets], dim=0)
         results = postprocessors['bbox'](outputs, orig_target_sizes)
         # print((results))
-        for i in range(len(results)):
-            # print("key = " + str(key))
-            # arr = results[i]['boxes'].cpu().numpy()
-            widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
-            heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
-            areas = widths * heights
-            mask = areas > (32 ** 2)
-            results[i]['boxes'] = results[i]['boxes'][mask]
+        # for i in range(len(results)):
+        #     # print("key = " + str(key))
+        #     # arr = results[i]['boxes'].cpu().numpy()
+        #     widths = results[i]['boxes'][:, 3] - results[i]['boxes'][:, 1]
+        #     heights = results[i]['boxes'][:, 2] - results[i]['boxes'][:, 0]
+        #     areas = widths * heights
+        #     mask = areas > (32 ** 2)
+        #     results[i]['boxes'] = results[i]['boxes'][mask]
             # print("bbox result: ")
             # print(arr)
             # new_arr = []

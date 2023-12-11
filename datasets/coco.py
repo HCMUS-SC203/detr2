@@ -27,7 +27,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         target = {'image_id': image_id, 'annotations': target}
         img, target = self.prepare(img, target)
         # print(type(img))
-        img = pre_img.preprocess_img(img)
+        img = pre_img.process_img(img)
         if self._transforms is not None:
             img, target = self._transforms(img, target)
         return img, target

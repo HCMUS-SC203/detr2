@@ -118,8 +118,9 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
 
         for key in res.keys():
             print("key = " + str(key))
-            for type in res[key].keys():
-                print(res[key][type])
+            arr = res[key]['boxes'].cpu().numpy()
+            print("bbox result: ")
+            print(arr)
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

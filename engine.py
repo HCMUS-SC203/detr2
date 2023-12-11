@@ -118,8 +118,8 @@ def evaluate(model, criterion, postprocessors, data_loader, base_ds, device, out
 
         for key in res.keys():
             print("key = " + str(key))
-            for image_id in range(len(res[key])):
-                print(res[key][image_id])
+            for type in res[key].keys():
+                print(res[key][type])
         
         if coco_evaluator is not None:
             coco_evaluator.update(res)

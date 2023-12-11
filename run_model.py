@@ -183,7 +183,7 @@ def detect_set_images(model, transform, input_path, output_path):
 
     start = time.time()
 
-    for idx, img_path in zip(len(img_set), img_set):
+    for idx, img_path in zip(range(len(img_set)), img_set):
         prev, cur = save_detect_img(img_path, detr, transform, idx, output_path)
         print('Image', idx, ": Time", cur - prev, "(s) Total time", time.time() - start)
 

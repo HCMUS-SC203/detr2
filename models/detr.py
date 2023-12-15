@@ -360,8 +360,9 @@ class RemBackGround:
         boxes = bboxes_scaled.tolist()
         img_array = np.asarray(img)
         mask = np.zeros_like(img_array, dtype=np.uint8)
+        print("Image shape:", img_array.shape[0], img_array.shape[1])
         for xmin, ymin, xmax, ymax in boxes:
-            padding = 20
+            padding = 10
             xmin = max(0, int(xmin) - padding)
             ymin = max(0, int(ymin) - padding)
             xmax = min(img_array.shape[1], int(xmax) + padding)
@@ -370,7 +371,7 @@ class RemBackGround:
         img_array = np.bitwise_and(img_array, mask)
 
         # img.close()
-        img = Image.fromarray(img_array).convert('RGB')
+        img = Image.fromarray(img_array)
         return img
 
 def build(args):

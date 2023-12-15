@@ -332,6 +332,7 @@ class RemBackGround:
 
         if self.transforms is not None:
             samples = self.transforms(img, target)[0]
+        assert len(samples.shape) == 3, 'demo model only supports images with a single instance'
         samples.to(self.device)
 
         # print("Enter model")

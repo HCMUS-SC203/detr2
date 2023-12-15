@@ -312,6 +312,7 @@ class RemBackGround:
         self.model = build(args)[0]
         self.device = torch.device(args.device)
         self.model.to(self.device)
+        self.model.eval()
 
     def box_cxcywh_to_xyxy(self, x):
         x_c, y_c, w, h = x.unbind(1)

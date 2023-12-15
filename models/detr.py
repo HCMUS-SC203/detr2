@@ -308,7 +308,12 @@ class MLP(nn.Module):
 
 class RemBackGround:
     def __init__(self, transforms, args):
-        self.transforms = transforms
+        # self.transforms = transforms
+        self.transforms = T.Compose([
+            T.Resize(800),
+            T.ToTensor(),
+            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
         self.model = build(args)[0]
         self.device = torch.device(args.device)
         self.model.to(self.device)
@@ -331,8 +336,10 @@ class RemBackGround:
         # samples = self.transform(img).unsqueeze(0)
         # assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
 
-        if self.transforms is not None:
-            samples = self.transforms(img, None)[0]
+        # if self.transforms is not None:
+        #     samples = self.transforms(img, None)[0]
+
+        samples = self.transform(img).unsqueeze(0)
         samples.to(self.device)
 
         print("Samples.ndim",samples.ndim)

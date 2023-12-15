@@ -308,7 +308,7 @@ class MLP(nn.Module):
 
 class RemBackGround:
     def __init__(self, transforms, args):
-        self.transform = transforms
+        self.transforms = transforms
         self.model = build(args)[0]
         self.device = torch.device(args.device)
         self.model.to(self.device)

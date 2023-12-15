@@ -326,13 +326,13 @@ class RemBackGround:
         b = b * torch.tensor([img_w, img_h, img_w, img_h], dtype=torch.float32)
         return b
 
-    def __call__(self, img, target):
+    def __call__(self, img):
         print("Enter RemBackGround")
         # samples = self.transform(img).unsqueeze(0)
         # assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
 
         if self.transforms is not None:
-            samples = self.transforms(img, target)[0]
+            samples = self.transforms(img, None)[0]
         samples.to(self.device)
 
         # print("Enter model")

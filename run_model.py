@@ -11,7 +11,7 @@ import torchvision.transforms as T
 
 
 from models.backbone import Backbone, Joiner
-from models.detr import DETR, PostProcess
+from models.detr import DETR, PostProcess, RemBackGround
 from models.position_encoding import PositionEmbeddingSine
 from models.segmentation import DETRsegm, PostProcessPanoptic
 from models.transformer import Transformer
@@ -59,6 +59,9 @@ def rescale_bboxes(out_bbox, size):
 
 def detect(im, model, transform):
     # mean-std normalize the input image (batch-size: 1)
+    rembg = RemBackGround()
+    im = rembg(im)
+    # im.show()
     img = transform(im).unsqueeze(0)
 
     # demo model only support by default images with aspect ratio between 0.5 and 2
@@ -267,7 +270,7 @@ if __name__ == "__main__":
     if (model_name == "detr_r50"):
         detr = hubconf.detr_resnet50(pretrained=True).eval()
     elif (model_name == "detr_custom"):
-        detr = detr_custom(pretrained=True, num_classes=1, return_postprocessor=False).eval()
+        detr = detr_custom(pretrained=True, num_classes=91, return_postprocessor=False).eval()
     elif (model_name == "detr_r50_ft"):
         detr = hubconf.detr_resnet50_finetune(pretrained=True).eval()
 
@@ -285,6 +288,6 @@ if __name__ == "__main__":
     # detect_set(detr, transform, path_name)
     # print("Detected:", detected)
 
-    # detect_img("https://storage.googleapis.com/kagglesdsdata/datasets/4135086/7159570/val2017/000029.jpg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=databundle-worker-v2%40kaggle-161607.iam.gserviceaccount.com%2F20231211%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20231211T144442Z&X-Goog-Expires=345600&X-Goog-SignedHeaders=host&X-Goog-Signature=6177eda0f09b5a5965f7e88d053b4e17fc742e9e2e2c0d31a1c865d187afcac5a1655c7cece815f18ce2726846106529e290ab6d669da8cfa55f17733ccb707f40121458aba26460ec2a1c2b9baad129d71dce26c621e2a5454e674abfd18e5aa9b467dc524451b3761c1abe69ec4b10fb4f2400c59b1d7c7963fcb99f270074ed9b1e3903f1ae565165343848464f40398150282d9a3bfb3df6e8595e4866a25dd6ab9b6935005aaf37364598405eac2726a2cc766a7347bc4fdeb3ff3c7ff8832e5396a0797c3a3c843649b6698d975a23fcb008a70442057515660eb75078bfd451a5805fc2e2880ef5943101e1f0f98acb04d52c24cc7b62ac5349c10748", detr, transform)
+    detect_img("https://storage.googleapis.com/kagglesdsdata/datasets/4135086/7159570/val2017/000029.jpg?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=databundle-worker-v2%40kaggle-161607.iam.gserviceaccount.com%2F20231211%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20231211T144442Z&X-Goog-Expires=345600&X-Goog-SignedHeaders=host&X-Goog-Signature=6177eda0f09b5a5965f7e88d053b4e17fc742e9e2e2c0d31a1c865d187afcac5a1655c7cece815f18ce2726846106529e290ab6d669da8cfa55f17733ccb707f40121458aba26460ec2a1c2b9baad129d71dce26c621e2a5454e674abfd18e5aa9b467dc524451b3761c1abe69ec4b10fb4f2400c59b1d7c7963fcb99f270074ed9b1e3903f1ae565165343848464f40398150282d9a3bfb3df6e8595e4866a25dd6ab9b6935005aaf37364598405eac2726a2cc766a7347bc4fdeb3ff3c7ff8832e5396a0797c3a3c843649b6698d975a23fcb008a70442057515660eb75078bfd451a5805fc2e2880ef5943101e1f0f98acb04d52c24cc7b62ac5349c10748", detr, transform)
 
-    detect_set_images(detr, transform, input_path, output_path)
+    # detect_set_images(detr, transform, input_path, output_path)

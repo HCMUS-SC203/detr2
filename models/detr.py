@@ -323,7 +323,7 @@ class RemBackGround:
         self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
 
         checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://huggingface.co/nhphucqt/FT-DETR/resolve/main/checkpoint_299.pth?download=true", map_location="cpu", check_hash=True
+            url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cpu", check_hash=True
         )
         self.model.load_state_dict(checkpoint["model"])
         self.model.eval()
@@ -369,8 +369,8 @@ class RemBackGround:
             mask[ymin:ymax, xmin:xmax, :] = [0xFF, 0xFF, 0xFF]
         img_array = np.bitwise_and(img_array, mask)
 
-        img.close()
-        img = Image.fromarray(img_array)
+        # img.close()
+        img = Image.fromarray(img_array).convert('RGB')
         return img
 
 def build(args):

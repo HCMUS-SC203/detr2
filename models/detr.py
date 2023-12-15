@@ -314,7 +314,7 @@ class RemBackGround:
         # num_classes = 91
         # hidden_dim = 256
 
-        # self.device = torch.device("cuda")
+        self.device = torch.device("cuda")
 
         # backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
         # pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
@@ -322,9 +322,9 @@ class RemBackGround:
         # backbone_with_pos_enc.num_channels = backbone.num_channels
         # transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
         # self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
+        # self.model.to(self.device)
         # self.model.eval()
 
-        self.model.to(self.device)
 
         self.model = torch.hub.load('facebookresearch/detr', 'detr_resnet50', pretrained=True)
         self.model.to(self.device)

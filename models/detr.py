@@ -326,6 +326,7 @@ class RemBackGround:
             url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cuda:1", check_hash=True
         )
         self.model.load_state_dict(checkpoint["model"])
+        self.model.to(device)
         self.model.eval()
 
         self.transform = T.Compose([

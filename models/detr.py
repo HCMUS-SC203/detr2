@@ -9,7 +9,6 @@ import torch
 import torch.nn.functional as F
 import torchvision.transforms as T
 from torch import nn
-import torch.distributed as dist
 
 from util import box_ops
 from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
@@ -315,13 +314,6 @@ class RemBackGround:
         num_classes = 91
         hidden_dim = 256
 
-        # Your rank and world_size configuration
-        rank = 0
-        world_size = torch.cuda.device_count()  # Assuming one GPU per process
-
-        # Initialize the distributed environment
-        dist.init_process_group("nccl", init_method="tcp://127.0.0.1:FREE_PORT", world_size=world_size, rank=rank)
-
         self.device = torch.device("cuda")
 
         backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
@@ -334,8 +326,8 @@ class RemBackGround:
             url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cpu", check_hash=True
         )
         self.model.load_state_dict(checkpoint["model"])
-        self.model.to(self.device)
-        self.model = torch.nn.parallel.DistributedDataParallel(self.model)
+        # self.model.to(self.device)
+        # self.model = torch.nn.parallel.DistributedDataParallel(self.model)
         self.model.eval()
 
 

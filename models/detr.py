@@ -335,6 +335,8 @@ class RemBackGround:
             samples = self.transforms(img, None)[0]
         samples.to(self.device)
 
+        print("Samples.ndim",samples.ndim)
+
         # print("Enter model")
         outputs = self.model(samples)
         # print("Exit model")

@@ -307,7 +307,7 @@ class MLP(nn.Module):
         return x
 
 class RemBackGround:
-    def __init__(self):
+    def __init__(self, device):
         backbone_name = "resnet50"
         dilation = False
         num_classes = 91
@@ -334,6 +334,8 @@ class RemBackGround:
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
+        self.device = device
+
     def box_cxcywh_to_xyxy(self, x):
         x_c, y_c, w, h = x.unbind(1)
         b = [(x_c - 0.5 * w), (y_c - 0.5 * h),
@@ -349,6 +351,7 @@ class RemBackGround:
     def __call__(self, img):
         samples = self.transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
+        samples.to(self.device)
 
         outputs = self.model(samples)
 

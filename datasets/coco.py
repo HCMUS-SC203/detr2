@@ -17,10 +17,11 @@ import datasets.transforms as T
 
 
 class CocoDetection(torchvision.datasets.CocoDetection):
-    def __init__(self, img_folder, ann_file, transforms, return_masks):
+    def __init__(self, img_folder, ann_file, transforms, return_masks, args=None):
         super(CocoDetection, self).__init__(img_folder, ann_file)
         self._transforms = transforms
         self.prepare = ConvertCocoPolysToMask(return_masks)
+        self.imageFilter = detr.RemBackGround(transforms, args)
 
     def __getitem__(self, idx):
         print("Start GetItem")
@@ -37,11 +38,6 @@ class CocoDetection(torchvision.datasets.CocoDetection):
             img, target = self._transforms(img, target)
         print("Finish GetItem")
         return img, target
-    
-class MyCocoDetection(CocoDetection):
-    def __init__(self, img_folder, ann_file, transforms, return_masks, args):
-        super(MyCocoDetection, self).__init__(img_folder, ann_file, transforms, return_masks)
-        self.imageFilter = detr.RemBackGround(transforms, args)
 
 
 def convert_coco_poly_to_mask(segmentations, height, width):
@@ -168,5 +164,5 @@ def build(image_set, args):
     }
 
     img_folder, ann_file = PATHS[image_set]
-    dataset = MyCocoDetection(img_folder, ann_file, transforms=make_coco_transforms(image_set), return_masks=args.masks)
+    dataset = CocoDetection(img_folder, ann_file, transforms=make_coco_transforms(image_set), return_masks=args.masks)
     return dataset

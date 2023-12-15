@@ -27,6 +27,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         print("Done ImageFilter")
 
     def __getitem__(self, idx):
+        print("Start GetItem")
         img, target = super(CocoDetection, self).__getitem__(idx)
         image_id = self.ids[idx]
         target = {'image_id': image_id, 'annotations': target}
@@ -38,6 +39,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         print("Finish Filtering")
         if self._transforms is not None:
             img, target = self._transforms(img, target)
+        print("Finish GetItem")
         return img, target
 
 

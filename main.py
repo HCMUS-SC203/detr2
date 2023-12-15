@@ -1,4 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
+import multiprocessing
 import argparse
 import datetime
 import json
@@ -103,6 +104,7 @@ def get_args_parser():
 
 
 def main(args):
+    multiprocessing.set_start_method('spawn', force=True)
     utils.init_distributed_mode(args)
     print("git:\n  {}\n".format(utils.get_sha()))
 

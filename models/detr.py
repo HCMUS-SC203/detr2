@@ -352,33 +352,34 @@ class RemBackGround:
         print("Enter RemBackGround")
         samples = self.transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
+        print(self.device)
         if self.device is not None:
-            samples.to(self.device)
+            samples.to(self.device) 
 
         print("Enter model")
         outputs = self.model(samples)
         print("Exit model")
 
-        probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
-        keep = probas.max(-1).values > 0.7
-        # convert boxes from [0; 1] to image scales
-        bboxes_scaled = self.rescale_bboxes(outputs['pred_boxes'][0, keep], img.size)
-        # probas[keep], bboxes_scaled
-        boxes = bboxes_scaled.tolist()
-        img_array = np.asarray(img)
-        mask = np.zeros_like(img_array, dtype=np.uint8)
-        print("Image shape:", img_array.shape[0], img_array.shape[1])
-        for xmin, ymin, xmax, ymax in boxes:
-            padding = 10
-            xmin = max(0, int(xmin) - padding)
-            ymin = max(0, int(ymin) - padding)
-            xmax = min(img_array.shape[1], int(xmax) + padding)
-            ymax = min(img_array.shape[0], int(ymax) + padding)
-            mask[ymin:ymax, xmin:xmax, :] = [0xFF, 0xFF, 0xFF]
-        img_array = np.bitwise_and(img_array, mask)
+        # probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
+        # keep = probas.max(-1).values > 0.7
+        # # convert boxes from [0; 1] to image scales
+        # bboxes_scaled = self.rescale_bboxes(outputs['pred_boxes'][0, keep], img.size)
+        # # probas[keep], bboxes_scaled
+        # boxes = bboxes_scaled.tolist()
+        # img_array = np.asarray(img)
+        # mask = np.zeros_like(img_array, dtype=np.uint8)
+        # print("Image shape:", img_array.shape[0], img_array.shape[1])
+        # for xmin, ymin, xmax, ymax in boxes:
+        #     padding = 10
+        #     xmin = max(0, int(xmin) - padding)
+        #     ymin = max(0, int(ymin) - padding)
+        #     xmax = min(img_array.shape[1], int(xmax) + padding)
+        #     ymax = min(img_array.shape[0], int(ymax) + padding)
+        #     mask[ymin:ymax, xmin:xmax, :] = [0xFF, 0xFF, 0xFF]
+        # img_array = np.bitwise_and(img_array, mask)
 
-        # img.close()
-        img = Image.fromarray(img_array)
+        # # img.close()
+        # img = Image.fromarray(img_array)
         return img
 
 def build(args):

@@ -22,8 +22,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         self._transforms = transforms
         self.prepare = ConvertCocoPolysToMask(return_masks)
         print("Init ImageFilter...")
-        device = torch.device("cuda")
-        self.imageFilter = detr.RemBackGround(device)
+        self.imageFilter = detr.RemBackGround(torch.device("cuda"))
         print("Done ImageFilter")
 
     def __getitem__(self, idx):

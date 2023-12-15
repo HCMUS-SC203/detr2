@@ -327,7 +327,7 @@ class RemBackGround:
         )
         self.model.load_state_dict(checkpoint["model"])
         self.model.to(self.device)
-        self.model = torch.nn.parallel.DistributedDataParallel(self.model, device_ids=[0, 1])
+        self.model = torch.nn.parallel.DistributedDataParallel(self.model)
         self.model.eval()
 
 

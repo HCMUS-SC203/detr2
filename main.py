@@ -243,7 +243,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    # multiprocessing.set_start_method('spawn', force=True)
+    multiprocessing.set_start_method('spawn', force=True)
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
     if args.output_dir:

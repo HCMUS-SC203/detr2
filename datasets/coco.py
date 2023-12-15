@@ -34,7 +34,7 @@ class CocoDetection(torchvision.datasets.CocoDetection):
         # print(type(img))
         # img = pre_img.process_image(img)
         print("Start Filtering...");
-        # img = self.imageFilter(img)
+        img = self.imageFilter(img)
         print("Finish Filtering")
         if self._transforms is not None:
             img, target = self._transforms(img, target)

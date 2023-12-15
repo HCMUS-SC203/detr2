@@ -352,7 +352,7 @@ class RemBackGround:
         print("Enter RemBackGround")
         # samples = self.transform(img).unsqueeze(0)
         # assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
-        # print(self.device)
+        print(self.device)
         # if self.device is not None:
         #     samples.to(self.device) 
 

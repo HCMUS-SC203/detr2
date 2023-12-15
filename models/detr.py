@@ -339,7 +339,7 @@ class RemBackGround:
         # if self.transforms is not None:
         #     samples = self.transforms(img, None)[0]
 
-        samples = self.transform(img).unsqueeze(0)
+        samples = self.transforms(img).unsqueeze(0)
         samples.to(self.device)
 
         print("Samples.ndim",samples.ndim)

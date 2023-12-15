@@ -350,15 +350,15 @@ class RemBackGround:
 
     def __call__(self, img):
         print("Enter RemBackGround")
-        samples = self.transform(img).unsqueeze(0)
-        assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
-        print(self.device)
-        if self.device is not None:
-            samples.to(self.device) 
+        # samples = self.transform(img).unsqueeze(0)
+        # assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
+        # print(self.device)
+        # if self.device is not None:
+        #     samples.to(self.device) 
 
-        print("Enter model")
-        outputs = self.model(samples)
-        print("Exit model")
+        # print("Enter model")
+        # outputs = self.model(samples)
+        # print("Exit model")
 
         # probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
         # keep = probas.max(-1).values > 0.7

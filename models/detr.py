@@ -308,27 +308,31 @@ class MLP(nn.Module):
 
 class RemBackGround:
     def __init__(self):
-        # backbone_name = "resnet50"
-        # mask = False
-        # dilation = False
-        # num_classes = 91
-        # hidden_dim = 256
+        backbone_name = "resnet50"
+        mask = False
+        dilation = False
+        num_classes = 91
+        hidden_dim = 256
 
         self.device = torch.device("cuda")
 
-        # backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
-        # pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
-        # backbone_with_pos_enc = Joiner(backbone, pos_enc)
-        # backbone_with_pos_enc.num_channels = backbone.num_channels
-        # transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
-        # self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
-        # self.model.to(self.device)
-        # self.model.eval()
-
-
-        self.model = torch.hub.load('facebookresearch/detr', 'detr_resnet50', pretrained=True)
+        backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
+        pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
+        backbone_with_pos_enc = Joiner(backbone, pos_enc)
+        backbone_with_pos_enc.num_channels = backbone.num_channels
+        transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
+        self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
+        checkpoint = torch.hub.load_state_dict_from_url(
+            url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cuda", check_hash=True
+        )
+        self.model.load_state_dict(checkpoint["model"])
         self.model.to(self.device)
         self.model.eval()
+
+
+        # self.model = torch.hub.load('facebookresearch/detr', 'detr_resnet50', pretrained=True)
+        # self.model.to(self.device)
+        # self.model.eval()
 
         self.transforms = T.Compose([
             T.Resize(800),

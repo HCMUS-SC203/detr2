@@ -323,7 +323,7 @@ class RemBackGround:
         self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
 
         checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cuda:1", check_hash=True
+            url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cpu", check_hash=True
         )
         self.model.load_state_dict(checkpoint["model"])
         self.model.to(device)

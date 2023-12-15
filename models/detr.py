@@ -307,35 +307,11 @@ class MLP(nn.Module):
         return x
 
 class RemBackGround:
-    def __init__(self, device = None):
-        backbone_name = "resnet50"
-        dilation = False
-        num_classes = 91
-        mask = False
-
-        hidden_dim = 256
-
-        backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
-        pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
-        backbone_with_pos_enc = Joiner(backbone, pos_enc)
-        backbone_with_pos_enc.num_channels = backbone.num_channels
-        transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
-        self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
-
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/detr/detr-r50-e632da11.pth", map_location="cpu", check_hash=True
-        )
-        self.model.load_state_dict(checkpoint["model"])
-        self.model.to(device)
-        self.model.eval()
-
-        self.transform = T.Compose([
-            T.Resize(800),
-            T.ToTensor(),
-            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-
-        self.device = device
+    def __init__(self, transforms, args):
+        self.transform = transforms
+        self.model = build(args)[0]
+        self.device = torch.device(args.device)
+        self.model.to(self.device)
 
     def box_cxcywh_to_xyxy(self, x):
         x_c, y_c, w, h = x.unbind(1)
@@ -353,13 +329,13 @@ class RemBackGround:
         print("Enter RemBackGround")
         samples = self.transform(img).unsqueeze(0)
         assert samples.shape[-2] <= 1600 and samples.shape[-1] <= 1600, 'demo model only supports images up to 1600 pixels on each side'
-        print(self.device)
-        if self.device is not None:
-            samples.to(self.device) 
 
-        print("Enter model")
+        if self._transforms is not None:
+            samples = self._transforms(img)
+
+        # print("Enter model")
         outputs = self.model(samples)
-        print("Exit model")
+        # print("Exit model")
 
         probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
         keep = probas.max(-1).values > 0.7

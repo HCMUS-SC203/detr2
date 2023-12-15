@@ -313,6 +313,8 @@ class RemBackGround:
         dilation = False
         num_classes = 91
         hidden_dim = 256
+        
+        self.device = torch.device("cuda")
 
         backbone = Backbone(backbone_name, train_backbone=True, return_interm_layers=mask, dilation=dilation)
         pos_enc = PositionEmbeddingSine(hidden_dim // 2, normalize=True)
@@ -321,14 +323,14 @@ class RemBackGround:
         transformer = Transformer(d_model=hidden_dim, return_intermediate_dec=True)
         self.model = DETR(backbone_with_pos_enc, transformer, num_classes=num_classes, num_queries=100)
         self.model.to(self.device)
+        self.model.eval()
 
         self.transforms = T.Compose([
             T.Resize(800),
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-        self.device = torch.device("cuda")
-        self.model.eval()
+        
 
     def box_cxcywh_to_xyxy(self, x):
         x_c, y_c, w, h = x.unbind(1)

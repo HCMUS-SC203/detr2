@@ -381,7 +381,7 @@ class RemBackGround:
         mask = np.zeros_like(img_array, dtype=np.uint8)
         print("Image shape:", img_array.shape[0], img_array.shape[1])
         for xmin, ymin, xmax, ymax in boxes:
-            padding = 10
+            padding = 20
             xmin = max(0, int(xmin) - padding)
             ymin = max(0, int(ymin) - padding)
             xmax = min(img_array.shape[1], int(xmax) + padding)
